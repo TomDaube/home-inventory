@@ -25,6 +25,16 @@
         #launchScreen .ls-tag { margin-top: 6px; font-size: 15px; opacity: .85; animation: lsUp .6s .4s ease both; }
         #launchScreen .ls-bar { width: 140px; height: 4px; margin: 26px auto 0; border-radius: 4px; background: rgba(255,255,255,.25); overflow: hidden; animation: lsUp .4s .5s ease both; }
         #launchScreen .ls-bar i { display: block; height: 100%; width: 40%; border-radius: 4px; background: #fff; animation: lsLoad 1.1s .5s ease-in-out infinite; }
+        /* v3.12 guided help pop-ups */
+        #guideTip { position: fixed; z-index: 200; max-width: min(320px, calc(100vw - 24px)); background: #fff; color: #111827; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.28); padding: 12px 14px 10px; font-size: 14px; line-height: 1.45; }
+        .dark #guideTip { background: #1f2937; color: #f3f4f6; }
+        #guideTip .g-arrow { position: absolute; width: 14px; height: 14px; background: inherit; transform: rotate(45deg); }
+        #guideTip .g-step { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--primary-color); margin-bottom: 2px; }
+        #guideTip .g-btns { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        #guideTip .g-next { background: var(--primary-color); color: #fff; border-radius: 8px; padding: 6px 14px; font-weight: 600; }
+        #guideTip .g-skip { color: #6b7280; font-weight: 500; padding: 6px 4px; }
+        #guideTip .g-off { margin-left: auto; color: #6b7280; font-size: 12px; text-decoration: underline; }
+        .guide-target { outline: 3px solid var(--primary-color) !important; outline-offset: 3px; border-radius: 8px; position: relative; z-index: 1; }
         .hi-ver { font-size: 0.62em; font-weight: 500; opacity: 0.6; margin-left: 0.4em; letter-spacing: 0; white-space: nowrap; vertical-align: middle; }
         #launchScreen .ls-ver { position: absolute; left: 0; right: 0; bottom: max(18px, env(safe-area-inset-bottom)); font-size: 12px; opacity: .7; text-align: center; }
         @keyframes lsPop { from { transform: scale(.4) rotate(-8deg); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -692,6 +702,20 @@
                                 <span class="text-sm">Show "What would you like to do today?"</span>
                                 <span class="hi-switch"><input type="checkbox" id="toggleSplash" checked onchange="setSplashOn(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
                             </label>
+                            <label for="toggleGuided" class="flex items-center justify-between gap-3 px-2 py-1 mt-1 cursor-pointer">
+                                <span class="text-sm">Guided help (step-by-step tips)</span>
+                                <span class="hi-switch"><input type="checkbox" id="toggleGuided" onchange="setGuidedOn(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
+                            </label>
+                            <button type="button" onclick="resetGuides()" class="px-2 mt-0.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Show all the tips again</button>
+                        </div>
+                        <!-- v3.12 My settings file -->
+                        <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 px-2">
+                            <span class="block text-sm mb-2">My settings file</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="saveMySettings()" class="px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fa-solid fa-download mr-1"></i>Save my settings</button>
+                                <label class="px-2 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 text-center cursor-pointer"><i class="fa-solid fa-upload mr-1"></i>Load my settings<input type="file" accept=".json,application/json" class="hidden" onchange="loadMySettings(event)"></label>
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-1">Your colors, light/dark, text size, backgrounds and report choices, for moving to a new device. Each person keeps their own; your items are saved separately with Back up now.</p>
                         </div>
                         <!-- v3.02 Text size -->
                         <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 px-2">
@@ -1989,7 +2013,10 @@
                 <li><b>How to use this app: Help &amp; User Manual</b> (link in the footer, under the app name) opens this manual. To find something in it, type in the <b>Search</b> box at the top (or tap the <b>Search</b> button): every place that mentions your words is listed, and tapping one jumps there and highlights the words. The <b>Help</b> button at the top of the page opens it too.</li>
                 <li><b>Suggest a Feature or Report a Problem</b> (footer, and in the menu) opens a short form. Pick idea or problem, write a few words and tap <b>Send</b>; the app version and device type go with it. If Send isn't available (for example in a downloaded copy of the app), use <b>Gmail</b>, <b>Email app</b> or <b>Copy message</b> to send it to tomdaube@gmail.com. The app's owner sees everything sent at the bottom of the same form.</li>
                 <li><b>Menu</b> (the &#9776; button at the top left, beside the app name) lists everything the app can do in one place, grouped into Items, Reports, Moving and labels, Data and files, Organize, and Share and help. Type in <b>Find a function</b> to narrow the list.</li>
-                <li><b>Back up now</b> (footer) or <b>Data › Export JSON</b> saves a complete backup in one file: every item with its photos, receipts and documents, your lists (rooms, categories, types, tags, checklists and their order) and your settings (colors, light/dark, backgrounds, report, label and packing choices, reminders, start-up options). <b>Data › Import Data</b> with that file brings all of it back, on this device or a new one. (Excel and CSV exports hold only the items.) The footer shows your last backup date. It turns amber after 7 days.</li>
+                <li><b>Back up now</b> (footer) or <b>Data › Export JSON</b> saves a complete backup in one file: every item with its photos, receipts and documents, your lists (rooms, categories, types, tags, checklists and their order) <b>Data › Import Data</b> with that file brings them back, on this device or a new one. Backups hold only the inventory, never your settings, so restoring or sharing one doesn't change anyone's colors, text size or other choices.</li>
+                <li><b>Guided help</b> (Settings): when it's on, small pop-up tips point to each step of a task (the home screen, adding an item, printing labels, reports). Tap <b>Next</b> to go on, <b>Don't show this again</b> to stop one set, or <b>Turn off tips</b>. Each set shows the first two times, until you're familiar with it. <b>Show all the tips again</b> starts them over.</li>
+                <li><b>Search the manual:</b> the <b>Search</b> box at the top of this manual finds every place a word appears; tap a result to jump there.</li>
+                <li><b>My settings file</b> (Settings): <b>Save my settings</b> saves your own look and choices (colors, light/dark, text size, backgrounds, report, label and packing choices, reminders, start-up options) in a small separate file. <b>Load my settings</b> on a new phone or computer puts them back. Each person in the household keeps their own. (Excel and CSV exports hold only the items.) The footer shows your last backup date. It turns amber after 7 days.</li>
                 <li><b>Settings › Export all items › Excel spreadsheet</b> (also in the Data menu) creates a real .xlsx file with dollar values, dates, filters and a total row. <b>CSV file</b> is the same data as plain text.</li>
                 <li><b>Data › Import Data</b> restores a JSON backup or inventory.json (this replaces the current items). It also adds items from an <b>Excel (.xlsx)</b> or <b>CSV</b> file. The app reads the first sheet; it needs a header row with at least a <b>Name</b> column (Category, Room, Type, Value, SKU, Purchase Date, Warranty Expires, Notes and Item ID are also recognized). Rows with a matching Item ID are updated, so you can export to Excel, edit there and import the file back. Old .xls files need to be saved as .xlsx first.</li>
             </ul>
@@ -3329,7 +3356,7 @@
         }
         // v2.94 Version log: add an entry here with every update (newest first)
         const VERSION_LOG = [
-            ['3.12', ['A small <b>version number</b> now sits to the right of the <b>Home Inventory</b> name everywhere it shows: the opening screen, the manual, sharing, and on every report and printout.']],
+            ['3.12', ['<b>Guided help</b> (Settings): small pop-up tips walk you through adding an item, printing labels and using reports, one step at a time. Each set of tips shows the first couple of times, then stops. It starts on for new users; turn it on or off any time, or tap <b>Show all the tips again</b>.', '<b>Backups hold only your inventory</b> (items with photos and receipts, plus rooms, categories, types, tags and checklists). Your <b>settings</b> now have their own small file: <b>Settings › Save my settings</b> and <b>Load my settings</b>, so each person keeps their own look. Older backups that include settings still open; only their items and lists are used.', 'A small <b>version number</b> now sits to the right of the <b>Home Inventory</b> name everywhere it shows: the opening screen, the manual, sharing, and on every report and printout.']],
             ['3.11', ['Backups now hold <b>everything</b> in one file: your items (with photos and receipts), your lists (rooms, categories, types, tags, checklists) and your <b>settings</b> (colors, light/dark, backgrounds, list order, report, label and packing choices, reminders). Restoring a backup brings all of it back.']],
             ['3.10', ['New <b>Type</b> choices for jewelry and collectibles: Jewelry, Watch, Gemstone, Coin, Stamp, Trading card, Art, Antique and Collectible. Existing inventories get them once, and they can still be renamed or removed under Manage Lists.']],
             ['3.09', ['<b>Take inventory</b> (Items menu): tap <b>Seen now</b> on each item you have checked. The date, time and current room and spot are saved automatically. Filter by valuables, room or category, and <b>Mark all shown as seen</b> for a whole group.', '<b>Inventory report</b> (Reports menu, or from Take inventory): a printable list of items grouped by room, with the date the inventory was taken, last seen date and place, and totals. Items moved since they were last seen are flagged.', 'Each item shows its <b>Last seen</b> date, and the eye button in its details marks it seen now.']],
@@ -3579,18 +3606,38 @@
             });
             return n;
         }
+        // v3.12 My settings file: each person's look and choices, kept apart from the items backup
+        function saveMySettings() {
+            const data = { app: 'Home Inventory', kind: 'settings', version: APP_VERSION, savedAt: new Date().toISOString(), settings: collectSettings() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            saveFileAs(blob, exportFileName('My_Settings', '.json')).then(res => { if (res && res.ok) showToast('Saved your settings as ' + res.name + '. Your items are not in it; use Back up now for those.'); }).catch(() => showToast('Your settings could not be saved here.'));
+        }
+        function loadMySettings(event) {
+            const file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            file.text().then(text => {
+                let parsed = null;
+                try { parsed = JSON.parse(String(text).replace(/^\uFEFF/, '')); } catch (e) {}
+                if (!parsed || !parsed.settings || typeof parsed.settings !== 'object') { showToast('That file has no Home Inventory settings in it. Choose a My_Settings file.'); return; }
+                const n = applySettings(parsed.settings);
+                if (!n) { showToast('No settings were found in that file.'); return; }
+                reloadAfterSettings('Your settings were loaded (' + n + ').' + (parsed.kind === 'settings' ? '' : ' Only the settings were taken from that backup; your items were not changed.'));
+            }).catch(() => showToast('That file could not be read.'));
+        }
         // After a restore that brought settings, reload so every setting takes effect
         function reloadAfterSettings(msg) {
             try { sessionStorage.setItem('HI_AFTER_RESTORE', msg); } catch (e) {}
             setTimeout(() => location.reload(), 400);
         }
         function buildInventoryFileData() {
-            return { app: 'Home Inventory', format: 2, version: '3.12', name: currentInvName(), savedAt: new Date().toISOString(), items, lists, settings: collectSettings() };
+            return { app: 'Home Inventory', format: 2, version: '3.12', name: currentInvName(), savedAt: new Date().toISOString(), items, lists };
         }
 
         function parseInventoryFileText(text) {
             const parsed = JSON.parse(String(text).replace(/^﻿/, ''));
             if (Array.isArray(parsed)) return { items: parsed, lists: null, savedAt: null };
+            if (parsed && parsed.kind === 'settings') throw new Error('This is a settings file, not a Home Inventory file of items. Load it from Settings › Load my settings.');
             if (parsed && Array.isArray(parsed.items)) {
                 const okLists = parsed.lists && ['category', 'location', 'type'].every(k => Array.isArray(parsed.lists[k]) && parsed.lists[k].length);
                 return { items: parsed.items, lists: okLists ? parsed.lists : null, savedAt: parsed.savedAt || null, name: typeof parsed.name === 'string' ? parsed.name : '', settings: parsed.settings && typeof parsed.settings === 'object' ? parsed.settings : null };
@@ -3774,7 +3821,7 @@
             hideFilePanels();
             fileMeta = null;
             applyFileData(data);
-            const restoredSettings = applySettings(data.settings);
+            const restoredSettings = 0;   // v3.12 backups hold items and lists only; settings have their own file
             if (handle) {
                 fileHandle = handle;
                 let perm = 'denied';
@@ -5119,7 +5166,6 @@
                 if (parsed.lists) { lists = parsed.lists; saveLists(); populateSelects(); }
                 persistItems();
                 renderApp();
-                if (applySettings(parsed.settings)) return reloadAfterSettings(`Opened ${items.length} item${items.length === 1 ? '' : 's'} into ${currentInvName()}, with its settings.`);
                 showToast(`Opened ${items.length} item${items.length === 1 ? '' : 's'} into ${currentInvName()}.`);
             } catch (e) {}
         }
@@ -8750,8 +8796,7 @@
                         if (!persistItems()) { items = before; return; }
                         checkAutoBackupReminders();
                         renderApp();
-                        if (applySettings(parsed.settings)) reloadAfterSettings('Backup restored: ' + items.length + ' items, lists and settings.');
-                        else showToast('Backup restored: ' + items.length + ' items loaded.');
+                        showToast('Backup restored: ' + items.length + ' items loaded.');
                     }
                 } catch (err) {
                     showToast('Could not read that file. Use a JSON backup, an Excel (.xlsx) file or a CSV file with a Name column.');
@@ -9769,7 +9814,126 @@
             document.getElementById('splashKeep').checked = splashOn();
             document.getElementById('splash').classList.remove('hidden');
         }
-        function closeSplash() { document.getElementById('splash').classList.add('hidden'); }
+        function closeSplash() { document.getElementById('splash').classList.add('hidden'); setTimeout(() => maybeGuide('home'), 500); }
+
+        // v3.12 Guided help: little pop-ups that walk through a task one step at a time.
+        // Each guide shows until it has been finished twice (or "Don't show this again"); Settings turns it on or off.
+        const GUIDED_KEY = 'HOME_INVENTORY_GUIDED', GUIDES_SEEN_KEY = 'HOME_INVENTORY_GUIDES_SEEN';
+        const GUIDES = {
+            home: [
+                { sel: 'button[onclick="openAddModal()"]', title: 'Add an item', text: 'Tap <b>Add Item</b> to put something in your inventory: a name is all it needs. <b>Snap &amp; Add</b> starts with a photo instead.' },
+                { sel: '#searchInput', title: 'Find things', text: 'Type here to search by name, room, serial number, tag or notes. Leave it empty and tap <b>Go</b> to see everything.' },
+                { sel: '#appMenuBtn', title: 'Everything else', text: 'The <b>☰ menu</b> lists every part of the app: reports, labels, checklists, vehicles, moving, backups and settings.' },
+                { sel: 'footer [onclick="exportJSON()"]', title: 'Keep a backup', text: '<b>Back up now</b> saves a copy of your inventory, with photos, to a file. Do it now and then, and keep it somewhere outside your home.' }
+            ],
+            addItem: [
+                { sel: '#itemName', title: 'Name it', text: 'Start with a name, like <i>Living room TV</i>. That is the only thing you must fill in.' },
+                { sel: () => { const i = document.querySelector('#itemModal .fa-image'); return i && i.closest('label'); }, title: 'Add a photo', text: 'Add a photo of the item. It helps you find it and proves you own it for insurance.' },
+                { sel: '#itemLocation', title: 'Where is it?', text: 'Pick the <b>room</b> it is in, so you can find it and make reports by room.' },
+                { sel: '#itemMoreFields > summary', title: 'More details', text: 'Open <b>More fields</b> for the serial number (with a <b>Label</b> photo of the sticker), make and model, purchase date, warranty, receipt and maintenance.' },
+                { sel: '#itemSaveBtn', title: 'Save', text: 'Tap <b>Save Item</b> when you are done. You can change it any time.' }
+            ],
+            labels: [
+                { sel: '#lblSource', title: 'Which items', text: 'Choose which items get labels. Items you picked with the small <b>tag icon</b> next to the star show up first.' },
+                { sel: '#lblFormatList', title: 'Label sheet', text: 'Pick the label sheet you have, or plain paper.' },
+                { sel: '#lblGoBtn', title: 'Make them', text: 'Tap here to make the labels, then <b>Print</b> or <b>Save PDF</b>.' },
+                { sel: '#labelsModal [onclick="clearAllLabels()"]', title: 'Start over', text: '<b>Clear all</b> unpicks every item and resets these choices.' }
+            ],
+            report: [
+                { sel: () => [...document.querySelectorAll('.rep-toolbar .rep-print[onclick^="printDoc"]')].find(e => e.offsetParent), title: 'Print', text: '<b>Print</b> sends this report to your printer.' },
+                { sel: () => [...document.querySelectorAll('.rep-toolbar .rep-save')].find(e => e.offsetParent), title: 'Save PDF', text: '<b>Save PDF</b> keeps a copy as a file you can email or store.' },
+                { sel: () => [...document.querySelectorAll('.rep-toolbar button')].find(e => e.offsetParent && /Email/.test(e.textContent)), title: 'Email', text: '<b>Email</b> sends the report from your own email app.' }
+            ]
+        };
+        let guide = null;
+        function guidedOn() {
+            try { const v = localStorage.getItem(GUIDED_KEY); if (v !== null) return v === '1'; } catch (e) {}
+            return typeof items !== 'undefined' && items.length <= 2;   // new to the app: on; already set up: off until turned on
+        }
+        function guidesSeen() { try { return JSON.parse(localStorage.getItem(GUIDES_SEEN_KEY)) || {}; } catch (e) { return {}; } }
+        function saveGuidesSeen(o) { try { localStorage.setItem(GUIDES_SEEN_KEY, JSON.stringify(o)); } catch (e) {} }
+        function setGuidedOn(on) {
+            try { localStorage.setItem(GUIDED_KEY, on ? '1' : '0'); } catch (e) {}
+            syncGuidedToggle();
+            if (!on) endGuide();
+            showToast(on ? 'Guided help is on. Tips show the first couple of times you use each part.' : 'Guided help is off.');
+        }
+        function syncGuidedToggle() { const t = document.getElementById('toggleGuided'); if (t) t.checked = guidedOn(); }
+        function resetGuides() { saveGuidesSeen({}); try { localStorage.setItem(GUIDED_KEY, '1'); } catch (e) {} syncGuidedToggle(); showToast('All the tips will show again.'); }
+        function guideEl(step) {
+            let el = null;
+            try { el = typeof step.sel === 'function' ? step.sel() : document.querySelector(step.sel); } catch (e) {}
+            return el && el.getClientRects().length ? el : null;
+        }
+        function maybeGuide(name) {
+            if (guide || !guidedOn() || !GUIDES[name]) return;
+            const seen = guidesSeen()[name] || {};
+            if (seen.off || (seen.done || 0) >= 2) return;
+            const sp = document.getElementById('splash'); if (name === 'home' && sp && !sp.classList.contains('hidden')) return;
+            if (name === 'home' && document.querySelector('#itemModal:not(.hidden), #labelsModal:not(.hidden)')) return;
+            guide = { name, i: -1 };
+            guideNext();
+        }
+        function guideNext() {
+            if (!guide) return;
+            const steps = GUIDES[guide.name];
+            let el = null;
+            do { guide.i++; } while (guide.i < steps.length && !(el = guideEl(steps[guide.i])));
+            if (guide.i >= steps.length) return endGuide(true);
+            guide.el = el;
+            document.querySelectorAll('.guide-target').forEach(x => x.classList.remove('guide-target'));
+            el.classList.add('guide-target');
+            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            const st = steps[guide.i], last = !steps.slice(guide.i + 1).some(x => guideEl(x));
+            let tip = document.getElementById('guideTip');
+            if (!tip) { tip = document.createElement('div'); tip.id = 'guideTip'; tip.setAttribute('role', 'dialog'); tip.setAttribute('aria-live', 'polite'); document.body.appendChild(tip); }
+            tip.innerHTML = `<span class="g-arrow"></span><div class="g-step">Tip ${guide.i + 1} of ${steps.length} · ${esc(st.title)}</div><div>${st.text}</div>
+                <div class="g-btns"><button type="button" class="g-next" onclick="guideNext()">${last ? 'Got it' : 'Next'}</button><button type="button" class="g-skip" onclick="endGuide(false, true)">Don't show this again</button><button type="button" class="g-off" onclick="setGuidedOn(false)">Turn off tips</button></div>`;
+            setTimeout(placeGuide, 350);
+            placeGuide();
+        }
+        function placeGuide() {
+            const tip = document.getElementById('guideTip');
+            if (!guide || !tip || !guide.el) return;
+            if (!guide.el.isConnected || !guide.el.getClientRects().length) return endGuide();
+            const r = guide.el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight, vw = innerWidth, vh = innerHeight;
+            const below = r.bottom + 12 + th < vh || r.top < th + 12;
+            const top = below ? Math.min(r.bottom + 12, vh - th - 8) : Math.max(8, r.top - 12 - th);
+            const left = Math.max(8, Math.min(r.left + r.width / 2 - tw / 2, vw - tw - 8));
+            tip.style.top = top + 'px'; tip.style.left = left + 'px';
+            const a = tip.querySelector('.g-arrow');
+            a.style.left = Math.max(12, Math.min(r.left + r.width / 2 - left - 7, tw - 26)) + 'px';
+            a.style.top = below ? '-7px' : ''; a.style.bottom = below ? '' : '-7px';
+        }
+        function endGuide(finished, never) {
+            if (guide) {
+                const all = guidesSeen(), s = all[guide.name] || {};
+                if (finished) s.done = (s.done || 0) + 1;
+                if (never) s.off = true;
+                all[guide.name] = s; saveGuidesSeen(all);
+            }
+            guide = null;
+            document.querySelectorAll('.guide-target').forEach(x => x.classList.remove('guide-target'));
+            const tip = document.getElementById('guideTip'); if (tip) tip.remove();
+        }
+        addEventListener('resize', () => placeGuide());
+        addEventListener('scroll', () => placeGuide(), true);
+        addEventListener('keydown', e => { if (e.key === 'Escape' && guide) endGuide(); });
+        // start a guide when its part of the app opens
+        function guideAfter(fnName, name, ms) {
+            const orig = window[fnName];
+            if (typeof orig !== 'function') return;
+            window[fnName] = function () { const r = orig.apply(this, arguments); endGuide(); setTimeout(() => maybeGuide(name), ms || 450); return r; };
+        }
+        setTimeout(() => {
+            guideAfter('openAddModal', 'addItem');
+            guideAfter('openLabelsModal', 'labels');
+            ['openInsuranceReport', 'openLocationReport', 'openTaxReport', 'openMaintReport', 'openSummaryReport', 'openInventoryReport', 'openGroupedReport', 'openCurrentViewReport', 'openItemReport', 'openVehicleReport', 'openLossReport', 'openPoliceReport'].forEach(f => guideAfter(f, 'report', 600));
+            ['closeModal', 'closeLabelsModal', 'closeInsuranceReport', 'closeLabelSheet'].forEach(f => { const o = window[f]; if (typeof o === 'function') window[f] = function () { endGuide(); return o.apply(this, arguments); }; });
+            syncGuidedToggle();
+            const sp = document.getElementById('splash');
+            if (!sp || sp.classList.contains('hidden')) setTimeout(() => maybeGuide('home'), 1500);
+        }, 0);
         function splashGo(k) {
             closeSplash();
             const fn = SPLASH_TILES[k][3];
