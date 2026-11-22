@@ -804,6 +804,10 @@
                                 <span class="hi-switch"><input type="checkbox" id="toggleFreshAsk" checked onchange="setFreshAskOn(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
                             </label>
                             <button type="button" onclick="openFreshCheck()" class="px-2 mt-0.5 mr-3 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Am I up to date? Check now</button>
+                            <label for="toggleTodo" class="flex items-center justify-between gap-3 px-2 py-1 mt-1 cursor-pointer">
+                                <span class="text-sm">Show what needs doing when the app opens</span>
+                                <span class="hi-switch"><input type="checkbox" id="toggleTodo" onchange="setTodoOn(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
+                            </label>
                             <label for="toggleNamesAsk" class="flex items-center justify-between gap-3 px-2 py-1 mt-1 cursor-pointer">
                                 <span class="text-sm">Ask for our names when the app opens</span>
                                 <span class="hi-switch"><input type="checkbox" id="toggleNamesAsk" onchange="setNamesAsk(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
@@ -2224,6 +2228,7 @@
                 <li><b>Menu</b> (the &#9776; button at the top left, beside the app name) lists everything the app can do in one place, grouped into Items, Reports, Moving and labels, Data and files, Organize, and Share and help. Type in <b>Find a function</b> to narrow the list.</li>
                 <li><b>Back up now</b> (footer) or <b>Data › Export JSON</b> saves a complete backup in one file: every item with its photos, receipts and documents, your lists (rooms, categories, types, tags, checklists and their order) <b>Data › Import Data</b> with that file brings them back, on this device or a new one. Backups hold only the inventory, never your settings, so restoring or sharing one doesn't change anyone's colors, text size or other choices.</li>
                 <li><b>Am I up to date?</b> When the app opens on a device it asks whether to check three things: that the <b>app</b> is the newest version, that the <b>inventory data</b> matches your Household Sync or shared inventory file, and when your <b>settings</b> were last saved or loaded. Each line has a button to fix it (Update now, Load the newer copy, Open my inventory file, Load my settings). It's also in the ☰ menu under Data and files. Turn the question off in Settings.</li>
+                <li><b>What needs doing:</b> when something is due, it's the first thing you see when the app opens: a window greets you by name and lists each reminder (maintenance such as filter changes, warranties and documents ending, vehicle service, items that need details, the weekly backup). Tap a button to take care of it, <b>Got it</b> or <b>Later</b> to put it away, or <b>Continue to the app</b>. Turn it off in Settings (<b>Show what needs doing when the app opens</b>) or with the checkbox in the window, and open it any time from ☰ › Data and files › What needs doing.</li>
                 <li><b>Moving tutorial:</b> about to move? Open <b>☰ › Moving and labels › Moving tutorial</b> (or <b>How to</b> at the top of the Packing List). Seven short steps cover marking what moves, adding what's missing, labels, packing box by box, box contents sheets, moving day and unpacking; each step has buttons that open that part of the app.</li>
                 <li><b>Your names</b> (Settings): the first time the app opens it asks your name and, if you like, your spouse or partner's and others in the household. Skip it and add them later in Settings › Your names. The welcome screen greets you by name, and each item shows who added it and who last changed it. Names are kept with your settings on each device, not in the inventory backup. Turn off the question with <b>Ask for our names when the app opens</b>.</li>
                 <li><b>Guided help</b> (Settings): when it's on, small pop-up tips point to each step of a task (the home screen, adding an item, printing labels, reports). Tap <b>Next</b> to go on, <b>Don't show this again</b> to stop one set, or <b>Turn off tips</b>. Each set shows the first two times, until you're familiar with it. <b>Show all the tips again</b> starts them over.</li>
@@ -2290,6 +2295,24 @@
     </div>
 
     <!-- v2.18 Print Labels Modal -->
+    <!-- v3.32 What needs doing: the first thing you see when something is due -->
+    <div id="todoModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[95]">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col">
+            <div class="flex items-start justify-between gap-3 px-5 pt-5 pb-3">
+                <div>
+                    <h3 id="todoHello" class="text-xl font-bold"></h3>
+                    <p id="todoSub" class="text-sm text-gray-500 dark:text-gray-400 mt-0.5"></p>
+                </div>
+                <button type="button" onclick="closeTodo(true)" class="text-gray-400 hover:text-gray-600 w-9 h-9 -mr-2 flex items-center justify-center" title="Close"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="todoBody" class="px-5 space-y-3 overflow-y-auto"></div>
+            <div class="flex flex-wrap items-center gap-2 px-5 py-4">
+                <label class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer"><input type="checkbox" id="todoKeep" onchange="setTodoOn(this.checked)" class="rounded"> Show this when the app opens</label>
+                <button type="button" onclick="closeTodo(true)" class="custom-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold ml-auto">Continue to the app</button>
+            </div>
+        </div>
+    </div>
+
     <!-- v3.32 Make it yours: names -->
     <div id="namesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[95]">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[92vh] overflow-y-auto p-6">
@@ -3109,6 +3132,7 @@
                 ]],
                 ['Data and files', [
                     ['fa-circle-check', 'Am I up to date? (app, data, settings)', 'openFreshCheck()'],
+                    ['fa-list-check', 'What needs doing (reminders)', 'openTodo()'],
                     ['fa-cloud', 'Household sync', 'openSyncModal()'],
                     ['fa-folder-open', 'Inventory file', 'openFileModal()'],
                     ['fa-cloud-arrow-down', 'Back up now (JSON)', 'exportJSON()'],
@@ -3720,7 +3744,7 @@
         }
         // v2.94 Version log: add an entry here with every update (newest first)
         const VERSION_LOG = [
-            ['3.32', ['In <b>Make it yours</b>, Tab, Return and the keyboard\'s Next button move from one name box to the next.', 'New <b>Moving tutorial</b> for anyone about to pack up a move: marking what moves, labels, packing box by box, box sheets, moving day and unpacking, with buttons that open each part and pop-up tips in the Packing List. Find it in ☰ › Moving and labels, <b>How to</b> in the Packing List, or Settings.', '<b>Make it yours:</b> the first time the app opens it asks your name and your spouse or partner\'s (skip it and come back any time in Settings › Your names). The welcome screen greets you, and each item shows who added it and who last changed it.', 'When you add a new room, category or type with <b>Edit</b> while adding or editing an item, the item now uses it right away (add <i>Breakfast room</i> and Room is set to Breakfast room).']],
+            ['3.32', ['<b>What needs doing</b> comes first: when something is due (maintenance like a filter change, a warranty or document ending, vehicle service, items that need details, a backup), the app opens with a window that greets you by name and lists each one with buttons to take care of it. Turn it off in Settings or with the checkbox in the window; open it any time from ☰ › Data and files › What needs doing.', 'In <b>Make it yours</b>, Tab, Return and the keyboard\'s Next button move from one name box to the next.', 'New <b>Moving tutorial</b> for anyone about to pack up a move: marking what moves, labels, packing box by box, box sheets, moving day and unpacking, with buttons that open each part and pop-up tips in the Packing List. Find it in ☰ › Moving and labels, <b>How to</b> in the Packing List, or Settings.', '<b>Make it yours:</b> the first time the app opens it asks your name and your spouse or partner\'s (skip it and come back any time in Settings › Your names). The welcome screen greets you, and each item shows who added it and who last changed it.', 'When you add a new room, category or type with <b>Edit</b> while adding or editing an item, the item now uses it right away (add <i>Breakfast room</i> and Room is set to Breakfast room).']],
             ['3.31', ['<b>Your items stay put</b>: an empty copy of the app no longer fills itself with the two example items; the app asks the browser to keep its storage permanently; a blue strip tells you when you\u2019re in a separate copy (a saved HI-app file, the Claude preview), with <b>Open my app</b>; and an empty copy offers <b>Open my latest backup</b>.', '<b>Fewer backup files</b>: Settings › Backup files: one file a month (default, HI-data-2611.json), one file (HI-data.json) or a new file every time. Choose Replace when your device asks.', 'An empty copy can\u2019t replace a good backup by accident: Back up asks for a second tap.']],
             ['3.30', ['File names now start with the <b>kind of file</b>: <b>HI-data-…</b> (your items), <b>HI-settings-…</b>, <b>HI-app…</b> and <b>HI-import-template</b>, then the date and time (YYMMDD-HHMM), so they sort together and are easy to spot.', 'On a computer with Chrome or Edge, each <b>Open/Load</b> button shows only its kind of file and remembers its own folder. On iPhone, iPad and Safari the picker can\u2019t filter by name, so the app checks the file you pick and tells you if it\u2019s the wrong kind.']],
             ['3.29', ['On an iPad, laptop or desktop the <b>menus are wider</b> (Reports, Data, Settings, the inventory menu and the ☰ menu), so each choice fits on one line instead of wrapping to two. Phones stay as they were.']],
@@ -3831,6 +3855,54 @@
         const FRESH_ASK_KEY = 'HOME_INVENTORY_FRESH_ASK';
         function freshAskOn() { try { return localStorage.getItem(FRESH_ASK_KEY) !== '0'; } catch (e) { return true; } }
         function setFreshAskOn(on) { try { localStorage.setItem(FRESH_ASK_KEY, on ? '1' : '0'); } catch (e) {} const t = document.getElementById('toggleFreshAsk'); if (t) t.checked = on; if (!on) showToast('The app will not ask. Use Data › Am I up to date? any time.'); }
+        // v3.32 What needs doing: when something is due (maintenance, filters, warranties, vehicle service,
+        // items that need details, backups), it is the first thing you see when the app opens, greeted by name
+        const TODO_KEY = 'HOME_INVENTORY_TODO_ON_OPEN';
+        function todoOn() { try { return localStorage.getItem(TODO_KEY) !== '0'; } catch (e) { return true; } }
+        function setTodoOn(on) { try { localStorage.setItem(TODO_KEY, on ? '1' : '0'); } catch (e) {} ['todoKeep', 'toggleTodo'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = on; }); }
+        function todoCards() {
+            try { renderReminders(); } catch (e) {}
+            const cards = lastReminderCards.slice();
+            if (!myName() && namesAskOn()) cards.push(`<div class="flex items-start gap-3 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 p-4">
+                <i class="fa-solid fa-circle-info custom-primary-text text-lg mt-0.5 w-6 text-center shrink-0"></i>
+                <div class="flex-1 min-w-0"><p class="font-semibold">Tell the app your name</p><div class="text-sm mt-1">So it can greet you and show who added or changed each item.</div>
+                <div class="flex flex-wrap gap-2 mt-3"><button type="button" onclick="openNames(true)" class="custom-primary text-white px-3 py-2 rounded-lg text-sm font-medium">Add our names</button></div></div></div>`);
+            return cards;
+        }
+        function fillTodo(cards) {
+            const me = myName(), n = cards.length;
+            document.getElementById('todoHello').textContent = me ? `${greetingWord()}, ${me}` : `${greetingWord()}!`;
+            document.getElementById('todoSub').textContent = n ? `${n === 1 ? 'One thing needs' : n + ' things need'} your attention in ${currentInvName()}.` : `You're all caught up in ${currentInvName()}. Nothing is due.`;
+            document.getElementById('todoBody').innerHTML = n ? cards.join('') : `<p class="text-center py-8 text-gray-500 dark:text-gray-400"><i class="fa-solid fa-circle-check text-3xl mb-2" style="color:#10b981"></i><br>Nothing needs doing right now.</p>`;
+            document.getElementById('todoKeep').checked = todoOn();
+        }
+        // At start-up: returns true when the window is showing (it then comes before the welcome screen)
+        function maybeShowTodo() {
+            if (!todoOn() || !items.length) return false;   // a brand-new, empty app gets the welcome and names questions instead
+            try { if (sessionStorage.getItem('HI_TODO_SHOWN')) return false; } catch (e) {}
+            const cards = todoCards();
+            const due = cards.length - (!myName() && namesAskOn() ? 1 : 0);
+            if (!due) return false;                       // only the names question: the usual name prompt handles it
+            try { sessionStorage.setItem('HI_TODO_SHOWN', '1'); sessionStorage.setItem('HI_NAMES_ASKED', '1'); sessionStorage.setItem('HI_FRESH_ASKED', '1'); } catch (e) {}
+            fillTodo(cards);
+            document.getElementById('todoModal').classList.remove('hidden');
+            return true;
+        }
+        function openTodo() { closeDropdowns(); try { sessionStorage.setItem('HI_TODO_SHOWN', '1'); } catch (e) {} fillTodo(todoCards()); document.getElementById('todoModal').classList.remove('hidden'); }
+        function closeTodo(toStart) {
+            const m = document.getElementById('todoModal'); if (m.classList.contains('hidden')) return;
+            m.classList.add('hidden');
+            if (toStart) { try { maybeShowSplash(); } catch (e) {} setTimeout(() => { try { maybeGuide('home'); } catch (e) {} }, 500); }
+        }
+        // Buttons inside: "Got it", "Later", "Tomorrow" update the list; anything else takes you there
+        document.addEventListener('click', e => {
+            const b = e.target.closest && e.target.closest('#todoBody button, #todoBody a');
+            if (!b) return;
+            const js = b.getAttribute('onclick') || '';
+            if (/dismiss|snooze|maintDone|logVehService|markDone/i.test(js)) setTimeout(() => { const c = todoCards(); if (!c.length) { closeTodo(true); showToast('All caught up!'); } else fillTodo(c); }, 60);
+            else closeTodo(false);
+        }, true);
+
         // v3.32 Make it yours: names (kept with this device's settings, not the inventory)
         const PEOPLE_KEY = 'HOME_INVENTORY_PEOPLE', NAMES_ASK_KEY = 'HOME_INVENTORY_NAMES_ASK';
         function people() { try { return JSON.parse(localStorage.getItem(PEOPLE_KEY)) || {}; } catch (e) { return {}; } }
@@ -7160,6 +7232,7 @@
         function dismissMaintReminder() { const p = remindPrefs(); p.maintSig = maintAlerts().map(i => i.id + '@' + i.maintDue).join(','); setRemindPrefs(p); renderReminders(); }
 
         function snoozeNeedsReminder() { const p = remindPrefs(); p.needsSnooze = Date.now() + 3 * 86400000; setRemindPrefs(p); renderReminders(); }
+        let lastReminderCards = [];
         function renderReminders() {
             const bar = document.getElementById('remindersBar');
             if (!bar) return;
@@ -7232,6 +7305,7 @@
                     (isAppleDevice() ? '<p class="mt-1 text-xs opacity-80">On iPhone or iPad: tap <b>Back up now</b>, then <b>Save to Files › iCloud Drive</b>. On a Mac, save it in your iCloud Drive folder.</p>' : ''),
                     btn('<i class="fa-solid fa-floppy-disk mr-1.5"></i> Back up now', 'backupFromReminder()', true) + btn('Tomorrow', 'snoozeBackupReminder()', false) + btn('Next week', 'snoozeBackupReminder(7)', false)));
             }
+            lastReminderCards = cards.slice();
             bar.innerHTML = cards.join('');
             bar.classList.toggle('hidden', !cards.length);
         }
@@ -11090,7 +11164,7 @@
         function maybeGuide(name, force) {
             if (guide || !GUIDES[name]) return;
             if (!force && !guidedOn()) return;
-            if (document.querySelector('#voiceModal:not(.hidden), #quickAddModal:not(.hidden), #actSheet:not(.hidden), #photoFull:not(.hidden), #walkModal:not(.hidden), #deleteModal:not(.hidden), #lossModal:not(.hidden), #namesModal:not(.hidden), #moveTut:not(.hidden)')) return;   // v3.25
+            if (document.querySelector('#voiceModal:not(.hidden), #quickAddModal:not(.hidden), #actSheet:not(.hidden), #photoFull:not(.hidden), #walkModal:not(.hidden), #deleteModal:not(.hidden), #lossModal:not(.hidden), #namesModal:not(.hidden), #moveTut:not(.hidden), #todoModal:not(.hidden)')) return;   // v3.25
             const seen = guidesSeen()[name] || {};
             if (!force && (seen.off || (seen.done || 0) >= 2)) return;
             const sp = document.getElementById('splash'); if (name === 'home' && sp && !sp.classList.contains('hidden')) return;
@@ -11164,6 +11238,7 @@
             guideAfter('openAddModal', 'addItem');
             guideAfter('openLabelsModal', 'labels');
             guideAfter('openPackingList', 'packing', 600);
+            { const t = document.getElementById('toggleTodo'); if (t) t.checked = todoOn(); }
             syncNamesUi();
             ['openInsuranceReport', 'openLocationReport', 'openTaxReport', 'openMaintReport', 'openSummaryReport', 'openInventoryReport', 'openGroupedReport', 'openCurrentViewReport', 'openItemReport', 'openVehicleReport', 'openLossReport', 'openPoliceReport'].forEach(f => guideAfter(f, 'report', 600));
             ['closeModal', 'closeLabelsModal', 'closeInsuranceReport', 'closeLabelSheet', 'closePackingList'].forEach(f => { const o = window[f]; if (typeof o === 'function') window[f] = function () { endGuide(); return o.apply(this, arguments); }; });
@@ -11178,6 +11253,7 @@
             setTimeout(() => { try { (new Function(fn))(); } catch (e) {} }, /Dropdown|toggleDropdown/.test(fn) ? 120 : 0);
         }
         function maybeShowSplash() {
+            if (maybeShowTodo()) return;   // v3.32 what needs doing comes first
             if (!splashOn()) return;
             try { if (sessionStorage.getItem('HI_SPLASH_SHOWN')) return; sessionStorage.setItem('HI_SPLASH_SHOWN', '1'); } catch (e) {}
             if (document.querySelector('.fixed.inset-0:not(.hidden)') || document.body.classList.contains('show-report')) return;
