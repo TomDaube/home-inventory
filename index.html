@@ -814,6 +814,7 @@
                                 <span class="hi-switch"><input type="checkbox" id="toggleNamesAsk" onchange="setNamesAsk(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
                             </label>
                             <button type="button" onclick="openNames()" class="px-2 mt-0.5 mr-3 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Your names<span id="namesSummary"></span></button>
+                            <button type="button" onclick="clearNames()" class="px-2 mt-0.5 mr-3 text-xs font-medium text-red-600 dark:text-red-400 hover:underline">Clear names</button>
                             <button type="button" onclick="openTutorials()" class="px-2 mt-0.5 mr-3 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">All tutorials</button>
                             <button type="button" onclick="resetGuides()" class="px-2 mt-0.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Show all the tips again</button>
                         </div>
@@ -2232,7 +2233,7 @@
                 <li><b>Tutorials:</b> ☰ › Tutorials (or Settings › All tutorials) lists every tutorial: <b>Getting started</b> (one minute), <b>Taking inventory</b> (checking what you still have and making a dated report) and <b>Moving</b>. Each step has buttons that open that part of the app.</li>
                 <li><b>What needs doing:</b> when something is due, it's the first thing you see when the app opens: a window greets you by name and lists each reminder (maintenance such as filter changes, warranties and documents ending, vehicle service, items that need details, the weekly backup). Tap a button to take care of it, <b>Got it</b> or <b>Later</b> to put it away, or <b>Continue to the app</b>. Turn it off in Settings (<b>Show what needs doing when the app opens</b>) or with the checkbox in the window, and open it any time from ☰ › Data and files › What needs doing.</li>
                 <li><b>Moving tutorial:</b> about to move? Open <b>☰ › Moving and labels › Moving tutorial</b> (or <b>How to</b> at the top of the Packing List). Seven short steps cover marking what moves, adding what's missing, labels, packing box by box, box contents sheets, moving day and unpacking; each step has buttons that open that part of the app.</li>
-                <li><b>Your names</b> (Settings): the first time the app opens it asks your name and, if you like, your spouse or partner's and others in the household. Skip it and add them later in Settings › Your names. The welcome screen greets you by name, and each item shows who added it and who last changed it. Names are kept with your settings on each device, not in the inventory backup. Turn off the question with <b>Ask for our names when the app opens</b>.</li>
+                <li><b>Your names</b> (Settings): the first time the app opens it asks your name and, if you like, your spouse or partner's and others in the household. Skip it and add them later in Settings › Your names. The welcome screen greets you by name, and each item shows who added it and who last changed it. Names are kept with your settings on each device, not in the inventory backup. Turn off the question with <b>Ask for our names when the app opens</b>. <b>Clear names</b> removes them, and the app asks again the next time it opens (good for showing the app to someone).</li>
                 <li><b>Guided help</b> (Settings): when it's on, small pop-up tips point to each step of a task (the home screen, adding an item, printing labels, reports). Tap <b>Next</b> to go on, <b>Don't show this again</b> to stop one set, or <b>Turn off tips</b>. Each set shows the first two times, until you're familiar with it. <b>Show all the tips again</b> starts them over.</li>
                 <li><b>Search the manual:</b> the <b>Search</b> box at the top of this manual finds every place a word appears; tap a result to jump there.</li>
                 <li><b>My settings file</b> (Settings): <b>Save my settings</b> saves your own look and choices (colors, light/dark, text size, backgrounds, report, label and packing choices, reminders, start-up options) in a small separate file. <b>Load my settings</b> on a new phone or computer puts them back. Each person in the household keeps their own. (Excel and CSV exports hold only the items.) The footer shows your last backup date. It turns amber after 7 days.</li>
@@ -2345,6 +2346,7 @@
                 <button type="button" onclick="saveNames()" class="custom-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold">Save</button>
                 <button type="button" onclick="closeNames('later')" class="px-4 py-2.5 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-600">Skip for now</button>
                 <button type="button" id="namesNever" onclick="closeNames('never')" class="ml-auto text-xs text-gray-500 underline">Don't ask again</button>
+                <button type="button" id="namesClear" onclick="clearNames()" class="ml-auto text-xs text-red-600 dark:text-red-400 underline">Clear names</button>
             </div>
         </div>
     </div>
@@ -3769,7 +3771,7 @@
         }
         // v2.94 Version log: add an entry here with every update (newest first)
         const VERSION_LOG = [
-            ['3.33', ['New <b>Tutorials</b> section (☰ › Tutorials, and in Settings): Getting started, <b>Taking inventory</b> and <b>Moving</b>, each with buttons that open that part of the app.', 'New <b>Taking inventory</b> tutorial: choosing what to check, Seen now, marking a whole group, what to do about missing items, and the dated inventory report. Take inventory has a <b>How to</b> button with pop-up tips.', '<b>Take inventory</b> can now check a <b>type</b> or a <b>tag</b> (a collection, like Coin collection), as well as a room, category, valuables or everything.']],
+            ['3.33', ['<b>Clear names</b> (Settings, or in Your names) removes the names so the app asks again next time it opens, handy for showing someone the app.', 'New <b>Tutorials</b> section (☰ › Tutorials, and in Settings): Getting started, <b>Taking inventory</b> and <b>Moving</b>, each with buttons that open that part of the app.', 'New <b>Taking inventory</b> tutorial: choosing what to check, Seen now, marking a whole group, what to do about missing items, and the dated inventory report. Take inventory has a <b>How to</b> button with pop-up tips.', '<b>Take inventory</b> can now check a <b>type</b> or a <b>tag</b> (a collection, like Coin collection), as well as a room, category, valuables or everything.']],
             ['3.32', ['<b>What needs doing</b> comes first: when something is due (maintenance like a filter change, a warranty or document ending, vehicle service, items that need details, a backup), the app opens with a window that greets you by name and lists each one with buttons to take care of it. Turn it off in Settings or with the checkbox in the window; open it any time from ☰ › Data and files › What needs doing.', 'In <b>Make it yours</b>, Tab, Return and the keyboard\'s Next button move from one name box to the next.', 'New <b>Moving tutorial</b> for anyone about to pack up a move: marking what moves, labels, packing box by box, box sheets, moving day and unpacking, with buttons that open each part and pop-up tips in the Packing List. Find it in ☰ › Moving and labels, <b>How to</b> in the Packing List, or Settings.', '<b>Make it yours:</b> the first time the app opens it asks your name and your spouse or partner\'s (skip it and come back any time in Settings › Your names). The welcome screen greets you, and each item shows who added it and who last changed it.', 'When you add a new room, category or type with <b>Edit</b> while adding or editing an item, the item now uses it right away (add <i>Breakfast room</i> and Room is set to Breakfast room).']],
             ['3.31', ['<b>Your items stay put</b>: an empty copy of the app no longer fills itself with the two example items; the app asks the browser to keep its storage permanently; a blue strip tells you when you\u2019re in a separate copy (a saved HI-app file, the Claude preview), with <b>Open my app</b>; and an empty copy offers <b>Open my latest backup</b>.', '<b>Fewer backup files</b>: Settings › Backup files: one file a month (default, HI-data-2611.json), one file (HI-data.json) or a new file every time. Choose Replace when your device asks.', 'An empty copy can\u2019t replace a good backup by accident: Back up asks for a second tap.']],
             ['3.30', ['File names now start with the <b>kind of file</b>: <b>HI-data-…</b> (your items), <b>HI-settings-…</b>, <b>HI-app…</b> and <b>HI-import-template</b>, then the date and time (YYMMDD-HHMM), so they sort together and are easy to spot.', 'On a computer with Chrome or Edge, each <b>Open/Load</b> button shows only its kind of file and remembers its own folder. On iPhone, iPad and Safari the picker can\u2019t filter by name, so the app checks the file you pick and tells you if it\u2019s the wrong kind.']],
@@ -3966,6 +3968,7 @@
             document.getElementById('nameOthers').value = (p.others || []).join(', ');
             document.getElementById('nameMeHint').classList.add('hidden');
             document.getElementById('namesNever').classList.toggle('hidden', !fromStart);
+            document.getElementById('namesClear').classList.toggle('hidden', !!fromStart || !(p.me || p.partner || (p.others || []).length));
             document.getElementById('namesModal').classList.remove('hidden');
             if (!p.me) claudeAccountName().then(n => { const el = document.getElementById('nameMe'); if (n && !el.value) { el.value = n; document.getElementById('nameMeHint').classList.remove('hidden'); } });
             setTimeout(() => { try { document.getElementById(p.me ? 'namePartner' : 'nameMe').focus(); } catch (e) {} }, 50);
@@ -3986,6 +3989,13 @@
                 fields[next].focus();
             } else if (e.key === 'Escape') closeNames('later');
         }, true);
+        // Clear the names (e.g. to show someone the app fresh): the question comes back the next time the app opens
+        function clearNames() {
+            try { localStorage.removeItem(PEOPLE_KEY); localStorage.setItem(NAMES_ASK_KEY, '1'); sessionStorage.removeItem('HI_NAMES_ASKED'); } catch (e) {}
+            document.getElementById('namesModal').classList.add('hidden');
+            syncNamesUi();
+            showToast('Names cleared. The app will ask for names the next time it opens, or tap Your names to enter them now.');
+        }
         function saveNames() {
             const clean = v => String(v || '').trim().replace(/\s+/g, ' ').slice(0, 40);
             const p = { me: clean(document.getElementById('nameMe').value), partner: clean(document.getElementById('namePartner').value), others: document.getElementById('nameOthers').value.split(',').map(clean).filter(Boolean).slice(0, 8) };
