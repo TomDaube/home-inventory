@@ -2303,16 +2303,16 @@
             <div class="mt-4 space-y-3">
                 <div>
                     <label for="nameMe" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Your name</label>
-                    <input id="nameMe" type="text" maxlength="40" autocomplete="given-name" placeholder="e.g. Tom" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base bg-white dark:bg-gray-900">
+                    <input id="nameMe" type="text" maxlength="40" autocomplete="given-name" enterkeyhint="next" placeholder="e.g. Tom" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base bg-white dark:bg-gray-900">
                     <p id="nameMeHint" class="hidden text-xs text-gray-500 dark:text-gray-400 mt-1">Filled in from your Claude account. Change it if you like.</p>
                 </div>
                 <div>
                     <label for="namePartner" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Spouse or partner (optional)</label>
-                    <input id="namePartner" type="text" maxlength="40" placeholder="e.g. Lauren" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base bg-white dark:bg-gray-900">
+                    <input id="namePartner" type="text" maxlength="40" autocomplete="off" enterkeyhint="next" placeholder="e.g. Lauren" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base bg-white dark:bg-gray-900">
                 </div>
                 <div>
                     <label for="nameOthers" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Others in the household (optional)</label>
-                    <input id="nameOthers" type="text" maxlength="120" placeholder="Names, separated by commas" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base bg-white dark:bg-gray-900">
+                    <input id="nameOthers" type="text" maxlength="120" autocomplete="off" enterkeyhint="done" placeholder="Names, separated by commas" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-base bg-white dark:bg-gray-900">
                 </div>
             </div>
             <p class="text-xs text-gray-400 mt-3">Names are kept in your settings on this device (and in your settings file), not in the inventory backup.</p>
@@ -3720,7 +3720,7 @@
         }
         // v2.94 Version log: add an entry here with every update (newest first)
         const VERSION_LOG = [
-            ['3.32', ['New <b>Moving tutorial</b> for anyone about to pack up a move: marking what moves, labels, packing box by box, box sheets, moving day and unpacking, with buttons that open each part and pop-up tips in the Packing List. Find it in ☰ › Moving and labels, <b>How to</b> in the Packing List, or Settings.', '<b>Make it yours:</b> the first time the app opens it asks your name and your spouse or partner\'s (skip it and come back any time in Settings › Your names). The welcome screen greets you, and each item shows who added it and who last changed it.', 'When you add a new room, category or type with <b>Edit</b> while adding or editing an item, the item now uses it right away (add <i>Breakfast room</i> and Room is set to Breakfast room).']],
+            ['3.32', ['In <b>Make it yours</b>, Tab, Return and the keyboard\'s Next button move from one name box to the next.', 'New <b>Moving tutorial</b> for anyone about to pack up a move: marking what moves, labels, packing box by box, box sheets, moving day and unpacking, with buttons that open each part and pop-up tips in the Packing List. Find it in ☰ › Moving and labels, <b>How to</b> in the Packing List, or Settings.', '<b>Make it yours:</b> the first time the app opens it asks your name and your spouse or partner\'s (skip it and come back any time in Settings › Your names). The welcome screen greets you, and each item shows who added it and who last changed it.', 'When you add a new room, category or type with <b>Edit</b> while adding or editing an item, the item now uses it right away (add <i>Breakfast room</i> and Room is set to Breakfast room).']],
             ['3.31', ['<b>Your items stay put</b>: an empty copy of the app no longer fills itself with the two example items; the app asks the browser to keep its storage permanently; a blue strip tells you when you\u2019re in a separate copy (a saved HI-app file, the Claude preview), with <b>Open my app</b>; and an empty copy offers <b>Open my latest backup</b>.', '<b>Fewer backup files</b>: Settings › Backup files: one file a month (default, HI-data-2611.json), one file (HI-data.json) or a new file every time. Choose Replace when your device asks.', 'An empty copy can\u2019t replace a good backup by accident: Back up asks for a second tap.']],
             ['3.30', ['File names now start with the <b>kind of file</b>: <b>HI-data-…</b> (your items), <b>HI-settings-…</b>, <b>HI-app…</b> and <b>HI-import-template</b>, then the date and time (YYMMDD-HHMM), so they sort together and are easy to spot.', 'On a computer with Chrome or Edge, each <b>Open/Load</b> button shows only its kind of file and remembers its own folder. On iPhone, iPad and Safari the picker can\u2019t filter by name, so the app checks the file you pick and tells you if it\u2019s the wrong kind.']],
             ['3.29', ['On an iPad, laptop or desktop the <b>menus are wider</b> (Reports, Data, Settings, the inventory menu and the ☰ menu), so each choice fits on one line instead of wrapping to two. Phones stay as they were.']],
@@ -3872,6 +3872,22 @@
             if (!p.me) claudeAccountName().then(n => { const el = document.getElementById('nameMe'); if (n && !el.value) { el.value = n; document.getElementById('nameMeHint').classList.remove('hidden'); } });
             setTimeout(() => { try { document.getElementById(p.me ? 'namePartner' : 'nameMe').focus(); } catch (e) {} }, 50);
         }
+        // Tab, Return and the phone keyboard's Next move field to field; Tab stays inside the panel
+        document.addEventListener('keydown', e => {
+            const modal = document.getElementById('namesModal');
+            if (!modal || modal.classList.contains('hidden')) return;
+            const fields = [...modal.querySelectorAll('input, button')].filter(el => el.offsetParent && !el.disabled);
+            const i = fields.indexOf(document.activeElement);
+            if (e.key === 'Enter' && document.activeElement && document.activeElement.tagName === 'INPUT') {
+                e.preventDefault();
+                if (document.activeElement.id === 'nameOthers') saveNames();
+                else fields[i + 1] && fields[i + 1].focus();
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                const n = fields.length, next = i < 0 ? 0 : (i + (e.shiftKey ? -1 : 1) + n) % n;
+                fields[next].focus();
+            } else if (e.key === 'Escape') closeNames('later');
+        }, true);
         function saveNames() {
             const clean = v => String(v || '').trim().replace(/\s+/g, ' ').slice(0, 40);
             const p = { me: clean(document.getElementById('nameMe').value), partner: clean(document.getElementById('namePartner').value), others: document.getElementById('nameOthers').value.split(',').map(clean).filter(Boolean).slice(0, 8) };
