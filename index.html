@@ -1223,7 +1223,25 @@
                     <div class="px-3 pb-3 pt-1 space-y-4">
                         <div>
                             <label id="lblItemSku" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">SKU / Serial Number</label>
-                            <input type="text" id="itemSku" placeholder="Optional SKU/Serial" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <div class="flex gap-2">
+                                <input type="text" id="itemSku" placeholder="Optional SKU/Serial" class="flex-1 min-w-0 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <label id="itemLabelPhotoBtn" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" title="Take a photo of the model / serial number sticker">
+                                    <i class="fa-solid fa-camera"></i><span>Label</span>
+                                    <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleLabelPhoto(event)">
+                                </label>
+                            </div>
+                            <!-- v3.02 photo of the model / serial sticker (a second photo, kept with the item) -->
+                            <div id="itemLabelPhotoRow" class="hidden mt-2 flex items-start gap-3">
+                                <button type="button" onclick="viewLabelFormPhoto()" title="See it full size" class="flex-shrink-0"><img id="itemLabelThumb" alt="Model and serial label" class="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"></button>
+                                <div class="min-w-0 flex-1 text-xs">
+                                    <p class="font-semibold text-gray-600 dark:text-gray-300">Label photo</p>
+                                    <p id="itemLabelRead" class="hidden mt-1 text-gray-600 dark:text-gray-300"></p>
+                                    <div class="flex flex-wrap gap-3 mt-1.5">
+                                        <label class="font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Retake<input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleLabelPhoto(event)"></label>
+                                        <button type="button" onclick="removeLabelPhoto()" class="font-medium text-red-600 dark:text-red-400 hover:underline">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div id="itemMakeModelRow">
                             <label for="itemMakeModel" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Make / Model</label>
@@ -1944,6 +1962,7 @@
             <ul>
                 <li><b>Settings › Try the Sample Home</b> opens a separate inventory called <b>Sample Home</b> with about two dozen example items: appliances, electronics, furniture, tools, valuables, documents, a car with service history, household supplies, and one missing and one stolen item. Use it to try the reports, labels and filters without touching your own items. Switch back from the inventory menu at the top; delete it there when you're done.</li>
                 <li><b>Settings › Import templates</b> downloads a sample Excel or CSV file with every column the app understands and a few example items (a TV, a sofa, a car, a document and a tool). Replace the sample rows with your own, keep the headings, and bring it in with <b>Data › Import Data</b>. Only the Name column is required; leave the Item ID column blank for new items.</li>
+                <li><b>Label photo:</b> under More fields, tap <b>Label</b> next to SKU / Serial to photograph the model and serial sticker (often inside a door or on the back). It's kept as a second photo with the item and shows next to the serial number when you view it; tap it to see it full size. If the sticker has a barcode, the app reads it into SKU / Serial; always check it against the photo.</li>
                 <li><b>Label printing:</b> tap the small <b>tag icon</b> next to the star on any item (in Cards, List or Lines, or <b>Select for labels</b> in the item's details) to pick it for labels; tap again to take it off. <b>Print Labels</b> then starts with just those items, and the Reports menu shows how many are picked. <b>Clear all</b> at the top of Print Labels unpicks everything and resets the choices.</li>
                 <li><b>Scan</b> also reads product barcodes (UPC, EAN, Code 128 and others) from a photo. If an item already has that number in its SKU / Serial, it opens. If not, tap <b>Add item with this barcode</b>; inside the Claude app, <b>Add with AI details</b> also suggests the name, make and model, category and a typical price from the photo. Check the suggestions before saving.</li>
                 <li><b>Data › Household Sync</b> keeps one shared copy of the inventory online, so all your devices and the people you share the app with see the same items, photos and receipts. On the app's claude.ai page, tap Share and invite family by email as an Editor; they open the link and tap <b>Join the shared inventory</b>. Each device keeps its own full copy too, so the app still works offline.</li>
@@ -3280,7 +3299,7 @@
         }
         // v2.94 Version log: add an entry here with every update (newest first)
         const VERSION_LOG = [
-            ['3.02', ['Items marked to move show a small orange truck after <b>✓ Moving</b>.', '<b>Print</b> and <b>Save PDF</b> are now two separate buttons on every report, the manual and label sheets.', '<b>Text size</b> in Settings: five sizes from smaller to largest, for this device.', 'The star is back on phones in <b>Lines</b> view, with the tag icon to its right.', 'New <b>tag icon</b> next to the star on every item (Cards, List and Lines) and <b>Select for labels</b> in an item\'s details: tap it to pick that item for label printing. <b>Print Labels</b> then starts with just the items you picked.', '<b>Clear all</b> at the top of Print Labels unpicks every item and resets the choices.']],
+            ['3.02', ['New <b>Label</b> camera button next to <b>SKU / Serial</b>: snap the model and serial sticker (inside a door, on the back) as a second photo. If the sticker has a barcode, the app reads it into SKU / Serial for you to check.', 'Items marked to move show a small orange truck after <b>✓ Moving</b>.', '<b>Print</b> and <b>Save PDF</b> are now two separate buttons on every report, the manual and label sheets.', '<b>Text size</b> in Settings: five sizes from smaller to largest, for this device.', 'The star is back on phones in <b>Lines</b> view, with the tag icon to its right.', 'New <b>tag icon</b> next to the star on every item (Cards, List and Lines) and <b>Select for labels</b> in an item\'s details: tap it to pick that item for label printing. <b>Print Labels</b> then starts with just the items you picked.', '<b>Clear all</b> at the top of Print Labels unpicks every item and resets the choices.']],
             ['3.01', ['New <b>Start</b> button at the top (and the little house next to the title): it shows the start-up screen again, then <b>What would you like to do today?</b>']],
             ['3.00', ['A <b>start-up screen</b> with the app icon greets you for a moment each time the app opens (tap it to skip). Turn it off in <b>Settings › When the app opens</b>.']],
             ['2.99', ['A cheerful <b>app icon</b> (a little house with a box and a green check), used automatically when you add the app to your Home Screen.', 'A small <b>version number</b> next to the Home Inventory title at the top.']],
@@ -4644,7 +4663,7 @@
             return s;
         }
         function prunePhotoUrls() {
-            const live = new Set(items.map(i => i.imageUrl));
+            const live = new Set(items.map(i => i.imageUrl)); items.forEach(i => { if (i.labelPhoto) live.add(i.labelPhoto); });
             photoUrlCache.forEach((s, u) => { if (!live.has(u)) { try { URL.revokeObjectURL(s); } catch (e) {} photoUrlCache.delete(u); } });
         }
 
@@ -4656,6 +4675,7 @@
                 if (isDataUrl(it.imageUrl) && mediaStored.get(pk) === it.imageUrl) s = { ...s, imageUrl: '', _photo: 1 };
                 else if (!mediaReady && !it.imageUrl && mediaStored.has(pk)) s = { ...s, _photo: 1 };
                 if (it.receipt && isDataUrl(it.receipt.data) && mediaStored.get(rk) === it.receipt.data) s = { ...s, receipt: { ...it.receipt, data: '', _r: 1 } };
+                { const lk = MEDIA_PREFIX + 'lp:' + it.id; if (isDataUrl(it.labelPhoto) && mediaStored.get(lk) === it.labelPhoto) s = { ...s, labelPhoto: '', _lp: 1 }; else if (!mediaReady && !it.labelPhoto && mediaStored.has(lk)) s = { ...s, _lp: 1 }; }
                 // v2.61 vehicle plate/VIN photos and service receipts
                 let veh = it.vehicle, svcs = it.services;
                 if (veh) VEH_PHOTO_FIELDS.forEach(([f, pre]) => { const k = MEDIA_PREFIX + pre + it.id; if (isDataUrl(veh[f]) && mediaStored.get(k) === veh[f]) veh = { ...veh, [f]: '', ['_m' + f]: 1 }; });
@@ -4684,6 +4704,7 @@
             items.forEach(it => {
                 if (isDataUrl(it.imageUrl)) wanted.set(MEDIA_PREFIX + 'p:' + it.id, it.imageUrl);
                 if (it.receipt && isDataUrl(it.receipt.data)) wanted.set(MEDIA_PREFIX + 'r:' + it.id, it.receipt.data);
+                if (isDataUrl(it.labelPhoto)) wanted.set(MEDIA_PREFIX + 'lp:' + it.id, it.labelPhoto);
                 if (it.vehicle) VEH_PHOTO_FIELDS.forEach(([f, pre]) => { if (isDataUrl(it.vehicle[f])) wanted.set(MEDIA_PREFIX + pre + it.id, it.vehicle[f]); });
                 (it.services || []).forEach(x => { if (x.receipt && isDataUrl(x.receipt.data)) wanted.set(MEDIA_PREFIX + 's:' + it.id + ':' + x.id, x.receipt.data); });
             });
@@ -4719,7 +4740,7 @@
                     store.openCursor().onsuccess = e => { const c = e.target.result; if (c) { found.set(c.key, c.value); c.continue(); } };
                     return found;
                 });
-                all.forEach((v, k) => { if (MEDIA_PREFIX ? k.startsWith(MEDIA_PREFIX) && k !== MEDIA_PREFIX + 'import' : /^(p|r|s|vp|vv):/.test(k)) mediaStored.set(k, v); });
+                all.forEach((v, k) => { if (MEDIA_PREFIX ? k.startsWith(MEDIA_PREFIX) && k !== MEDIA_PREFIX + 'import' : /^(p|r|s|vp|vv|lp):/.test(k)) mediaStored.set(k, v); });
                 let changed = false;
                 items.forEach(it => {
                     if (it._photo) {
@@ -4727,6 +4748,7 @@
                         if (v && !it.imageUrl) { it.imageUrl = v; changed = true; }
                         delete it._photo;
                     }
+                    if (it._lp) { const v = all.get(MEDIA_PREFIX + 'lp:' + it.id); if (v && !it.labelPhoto) it.labelPhoto = v; else if (!it.labelPhoto) delete it.labelPhoto; delete it._lp; changed = true; }
                     if (it.receipt && it.receipt._r) {
                         const v = all.get(MEDIA_PREFIX + 'r:' + it.id);
                         if (v) it.receipt.data = v; else it.receipt = null;
@@ -4744,7 +4766,7 @@
             } catch (e) {
                 mediaFailed = true;
                 items.forEach(it => {
-                    delete it._photo; if (it.receipt && it.receipt._r) it.receipt = null;
+                    delete it._photo; if (it._lp) { delete it._lp; if (!it.labelPhoto) delete it.labelPhoto; } if (it.receipt && it.receipt._r) it.receipt = null;
                     if (it.vehicle) VEH_PHOTO_FIELDS.forEach(([f]) => { delete it.vehicle['_m' + f]; });
                     (it.services || []).forEach(x => { if (x.receipt && x.receipt._r) x.receipt = null; });
                 });
@@ -4763,6 +4785,7 @@
             let n = 0;
             items.forEach(it => {
                 if (isDataUrl(it.imageUrl)) n += it.imageUrl.length;
+                if (isDataUrl(it.labelPhoto)) n += it.labelPhoto.length;
                 if (it.receipt && isDataUrl(it.receipt.data)) n += it.receipt.data.length;
             });
             return Math.round(n * 0.75);
@@ -5038,7 +5061,8 @@
             const ev = (editing && editing.vehicle) || {};
             if (formVehPhotos.plate !== (ev.platePhoto || '')) d.vp = formVehPhotos.plate;
             if (formVehPhotos.vin !== (ev.vinPhoto || '')) d.vv = formVehPhotos.vin;
-            for (const attempt of [d, { ...d, receipt: undefined }, { ...d, receipt: undefined, vp: undefined, vv: undefined }, { ...d, receipt: undefined, vp: undefined, vv: undefined, photo: undefined }]) {
+            if (formLabelPhoto !== ((editing && editing.labelPhoto) || '')) d.lp = formLabelPhoto;
+            for (const attempt of [d, { ...d, receipt: undefined }, { ...d, receipt: undefined, vp: undefined, vv: undefined }, { ...d, receipt: undefined, vp: undefined, vv: undefined, lp: undefined }, { ...d, receipt: undefined, vp: undefined, vv: undefined, lp: undefined, photo: undefined }]) {
                 try { localStorage.setItem(DRAFT_KEY, JSON.stringify(attempt)); return; } catch (e) {}
             }
         }
@@ -5064,6 +5088,7 @@
             if (d.receipt) formReceipt = d.receipt;
             if (d.vp !== undefined) formVehPhotos.plate = d.vp;
             if (d.vv !== undefined) formVehPhotos.vin = d.vv;
+            if (d.lp !== undefined) { formLabelPhoto = d.lp; updateLabelPhotoUI(); }
             applyDocLabels();
             fillSpotSuggestions();
             updatePhotoPreview();
@@ -5190,7 +5215,7 @@
                     ${row('fa-tags', 'Tags', itemTags(item).length ? tagChips(item, { big: true, cls: 'mt-1' }) : '')}
                     ${row('fa-box', 'Box', item.box ? esc(item.box) : '')}
                     ${doc ? '' : row('fa-industry', 'Make / Model', item.makeModel ? esc(item.makeModel) : '')}
-                    ${row(doc ? 'fa-hashtag' : 'fa-barcode', doc ? 'Document number' : 'SKU / Serial', item.sku ? `<span class="font-mono">${esc(item.sku)}</span>` : '')}
+                    ${row(doc ? 'fa-hashtag' : 'fa-barcode', doc ? 'Document number' : 'SKU / Serial', (item.sku ? `<span class="font-mono">${esc(item.sku)}</span>` : '') + (item.labelPhoto ? `<button type="button" onclick="viewLabelPhoto('${esc(String(item.id))}')" class="mt-2 flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400" title="See the label full size"><img src="${esc(photoSrc(item.labelPhoto))}" alt="Model and serial label" class="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700"><span><i class="fa-solid fa-expand mr-1"></i>Label photo</span></button>` : ''))}
                     ${row('fa-calendar', doc ? 'Date issued' : 'Purchased', item.purchaseDate ? esc(fmtDate(item.purchaseDate)) : '')}
                     ${row(doc ? 'fa-hourglass-half' : 'fa-shield-halved', doc ? 'Expires' : 'Warranty', w ? `<span class="inline-block px-2 py-0.5 rounded ${w.cls}">${esc(w.text)}</span>` : '')}
                     ${doc ? '' : row('fa-receipt', 'Receipt', item.receipt && item.receipt.data ? `<button type="button" onclick="viewItemReceipt('${item.id}')" class="font-semibold underline custom-primary-text">Open receipt</button>` : '')}
@@ -5235,6 +5260,55 @@
             if (document.getElementById('itemModal').classList.contains('hidden')) refreshOpenReport();
         }
         // v2.61 Vehicles: details, service log, service reminders by miles and/or months, Vehicle Maintenance report
+        // v3.02 Label photo: a second photo of the model / serial number sticker, next to SKU / Serial
+        let formLabelPhoto = '';
+        function updateLabelPhotoUI() {
+            const row = document.getElementById('itemLabelPhotoRow'), img = document.getElementById('itemLabelThumb');
+            row.classList.toggle('hidden', !formLabelPhoto);
+            if (formLabelPhoto) img.src = formLabelPhoto; else { img.removeAttribute('src'); document.getElementById('itemLabelRead').classList.add('hidden'); }
+            document.querySelector('#itemLabelPhotoBtn span').textContent = formLabelPhoto ? 'Label ✓' : 'Label';
+        }
+        function handleLabelPhoto(event) {
+            const file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            showToast('Adding label photo…');
+            resizeImageFile(file, 1600, 0.82).then(url => {
+                formLabelPhoto = url;
+                updateLabelPhotoUI();
+                saveItemDraft();
+                showToast('Label photo saved. Looking for a barcode…');
+                readLabelBarcode(url);
+            }).catch(() => showToast('That photo could not be read. Try again.'));
+        }
+        // If the sticker has a barcode, offer what it says for the SKU / Serial box (fills it when the box is empty)
+        async function readLabelBarcode(url) {
+            const out = document.getElementById('itemLabelRead');
+            let code = null;
+            try {
+                const img = new Image();
+                await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+                code = await decodeProduct(img, [1600, 1100, 800]);
+            } catch (e) {}
+            if (url !== formLabelPhoto) return;
+            if (!code) { out.innerHTML = 'No barcode found. Type the numbers from the photo; tap it to see it bigger.'; out.classList.remove('hidden'); showToast('Label photo saved. Type the model and serial from it.'); return; }
+            const sku = document.getElementById('itemSku');
+            if (!sku.value.trim()) {
+                sku.value = code; saveItemDraftSoon();
+                out.innerHTML = `Barcode read: <b class="font-mono">${esc(code)}</b>, put in SKU / Serial. Check it against the photo.`;
+                showToast('Read ' + code + ' from the barcode. Please check it.');
+            } else if (sku.value.trim() !== code) {
+                out.innerHTML = `Barcode read: <b class="font-mono">${esc(code)}</b> <button type="button" class="ml-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline" onclick="useLabelCode(this)" data-code="${esc(code)}">Use it</button>`;
+            } else out.innerHTML = `Barcode matches the SKU / Serial: <b class="font-mono">${esc(code)}</b>`;
+            out.classList.remove('hidden');
+        }
+        function useLabelCode(btn) { document.getElementById('itemSku').value = btn.dataset.code; saveItemDraftSoon(); btn.parentNode.innerHTML = 'Barcode put in SKU / Serial: <b class="font-mono">' + esc(btn.dataset.code) + '</b>'; }
+        function removeLabelPhoto() { formLabelPhoto = ''; updateLabelPhotoUI(); saveItemDraft(); }
+        function viewLabelFormPhoto() { if (formLabelPhoto) openReceipt({ data: formLabelPhoto, name: 'label.jpg', type: 'image/jpeg' }); }
+        function viewLabelPhoto(id) {
+            const it = items.find(i => String(i.id) === String(id));
+            if (it && it.labelPhoto) openReceipt({ data: it.labelPhoto, name: (it.name + ' label').replace(/[\\/:*?"<>|]+/g, ' ') + '.jpg', type: 'image/jpeg' });
+        }
         const VEH_PHOTO_FIELDS = [['platePhoto', 'vp:'], ['vinPhoto', 'vv:']];
         const VEH_SOON_MILES = 500, VEH_SOON_DAYS = 30;
         const VEH_PRESETS = [['Oil change', 5000, 6], ['Tire rotation', 7500, 12], ['Engine air filter', 15000, 12], ['Cabin air filter', 15000, 12], ['Brake inspection', 12000, 12], ['Wiper blades', 0, 12], ['Battery check', 0, 12], ['Coolant flush', 30000, 36], ['Transmission fluid', 60000, 60], ['Spark plugs', 60000, 72], ['Inspection / emissions', 0, 12], ['Registration renewal', 0, 12]];
@@ -6450,7 +6524,7 @@
                 syncMediaSoon();
                 return true;
             } catch (e) {
-                const unsaved = items.some(it => (isDataUrl(it.imageUrl) && mediaStored.get(MEDIA_PREFIX + 'p:' + it.id) !== it.imageUrl) || (it.receipt && isDataUrl(it.receipt.data) && mediaStored.get(MEDIA_PREFIX + 'r:' + it.id) !== it.receipt.data));
+                const unsaved = items.some(it => (isDataUrl(it.imageUrl) && mediaStored.get(MEDIA_PREFIX + 'p:' + it.id) !== it.imageUrl) || (it.receipt && isDataUrl(it.receipt.data) && mediaStored.get(MEDIA_PREFIX + 'r:' + it.id) !== it.receipt.data) || (isDataUrl(it.labelPhoto) && mediaStored.get(MEDIA_PREFIX + 'lp:' + it.id) !== it.labelPhoto));
                 if (!mediaFailed && unsaved) {
                     // A new photo didn't fit in the small area: move photos to the photo store first, then save
                     syncMedia().then(ok => {
@@ -7636,6 +7710,7 @@
             document.getElementById('itemTaxReport').checked = false; updateFormTaxBtn();
             formTags = []; renderFormTags();
             fillVehForm(null);
+            formLabelPhoto = ''; updateLabelPhotoUI();
             document.getElementById('itemModal').classList.remove('hidden');
         }
 
@@ -7684,6 +7759,7 @@
             document.getElementById('itemTaxReport').checked = !!item.taxReport; updateFormTaxBtn();
             formTags = itemTags(item).slice(); renderFormTags();
             fillVehForm(item);
+            formLabelPhoto = item.labelPhoto || ''; updateLabelPhotoUI();
             document.getElementById('itemModal').classList.remove('hidden');
         }
 
@@ -7741,6 +7817,7 @@
             if (existingItem) LOSS_FIELDS.forEach(k => { if (existingItem[k]) newItem[k] = existingItem[k]; });
             if (existingItem && existingItem.maintLast) newItem.maintLast = existingItem.maintLast;
             if (existingItem && existingItem.labeledAt) newItem.labeledAt = existingItem.labeledAt;
+            if (formLabelPhoto) newItem.labelPhoto = formLabelPhoto;
             { const parts = cleanParts(formParts); if (parts.length) newItem.maintParts = parts; }
             // v2.61 Vehicle details from the form; the service log and reminders are kept as they are
             if (formIsVehicle()) newItem.vehicle = readVehForm(existingItem && existingItem.vehicle);
