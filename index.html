@@ -706,6 +706,11 @@
                                 <span class="text-sm">Guided help (step-by-step tips)</span>
                                 <span class="hi-switch"><input type="checkbox" id="toggleGuided" onchange="setGuidedOn(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
                             </label>
+                            <label for="toggleFreshAsk" class="flex items-center justify-between gap-3 px-2 py-1 mt-1 cursor-pointer">
+                                <span class="text-sm">Ask to check I'm up to date when the app opens</span>
+                                <span class="hi-switch"><input type="checkbox" id="toggleFreshAsk" checked onchange="setFreshAskOn(this.checked)"><span class="hi-track"></span><span class="hi-knob"></span></span>
+                            </label>
+                            <button type="button" onclick="openFreshCheck()" class="px-2 mt-0.5 mr-3 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Am I up to date? Check now</button>
                             <button type="button" onclick="resetGuides()" class="px-2 mt-0.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">Show all the tips again</button>
                         </div>
                         <!-- v3.12 My settings file -->
@@ -2014,6 +2019,7 @@
                 <li><b>Suggest a Feature or Report a Problem</b> (footer, and in the menu) opens a short form. Pick idea or problem, write a few words and tap <b>Send</b>; the app version and device type go with it. If Send isn't available (for example in a downloaded copy of the app), use <b>Gmail</b>, <b>Email app</b> or <b>Copy message</b> to send it to tomdaube@gmail.com. The app's owner sees everything sent at the bottom of the same form.</li>
                 <li><b>Menu</b> (the &#9776; button at the top left, beside the app name) lists everything the app can do in one place, grouped into Items, Reports, Moving and labels, Data and files, Organize, and Share and help. Type in <b>Find a function</b> to narrow the list.</li>
                 <li><b>Back up now</b> (footer) or <b>Data › Export JSON</b> saves a complete backup in one file: every item with its photos, receipts and documents, your lists (rooms, categories, types, tags, checklists and their order) <b>Data › Import Data</b> with that file brings them back, on this device or a new one. Backups hold only the inventory, never your settings, so restoring or sharing one doesn't change anyone's colors, text size or other choices.</li>
+                <li><b>Am I up to date?</b> When the app opens on a device it asks whether to check three things: that the <b>app</b> is the newest version, that the <b>inventory data</b> matches your Household Sync or shared inventory file, and when your <b>settings</b> were last saved or loaded. Each line has a button to fix it (Update now, Load the newer copy, Open my inventory file, Load my settings). It's also in the ☰ menu under Data and files. Turn the question off in Settings.</li>
                 <li><b>Guided help</b> (Settings): when it's on, small pop-up tips point to each step of a task (the home screen, adding an item, printing labels, reports). Tap <b>Next</b> to go on, <b>Don't show this again</b> to stop one set, or <b>Turn off tips</b>. Each set shows the first two times, until you're familiar with it. <b>Show all the tips again</b> starts them over.</li>
                 <li><b>Search the manual:</b> the <b>Search</b> box at the top of this manual finds every place a word appears; tap a result to jump there.</li>
                 <li><b>My settings file</b> (Settings): <b>Save my settings</b> saves your own look and choices (colors, light/dark, text size, backgrounds, report, label and packing choices, reminders, start-up options) in a small separate file. <b>Load my settings</b> on a new phone or computer puts them back. Each person in the household keeps their own. (Excel and CSV exports hold only the items.) The footer shows your last backup date. It turns amber after 7 days.</li>
@@ -2066,6 +2072,32 @@
     </div>
 
     <!-- v2.18 Print Labels Modal -->
+    <!-- v3.12 Am I up to date? (app, data, settings) -->
+    <div id="freshAsk" class="hidden" style="position:fixed;left:12px;right:12px;bottom:max(12px, env(safe-area-inset-bottom));z-index:150">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-full" style="max-width:460px;margin:0 auto">
+            <p class="text-sm font-semibold"><i class="fa-solid fa-circle-check mr-1.5 custom-primary-text"></i>Check that you're up to date?</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Makes sure this device has the latest app, the latest inventory data and your latest settings.</p>
+            <div class="flex flex-wrap gap-2 mt-3">
+                <button type="button" onclick="freshAskAnswer(true)" class="custom-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">Check now</button>
+                <button type="button" onclick="freshAskAnswer(false)" class="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-600">Not now</button>
+                <button type="button" onclick="setFreshAskOn(false); freshAskAnswer(false)" class="ml-auto text-xs text-gray-500 underline">Don't ask</button>
+            </div>
+        </div>
+    </div>
+    <div id="freshModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[95]">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                <h3 class="text-lg font-bold">Am I up to date?</h3>
+                <button type="button" onclick="closeFreshModal()" class="text-gray-400 hover:text-gray-600 w-9 h-9 flex items-center justify-center" title="Close"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="freshBody" class="px-5 py-4 space-y-4 text-sm"></div>
+            <div class="px-5 pb-5 flex flex-wrap gap-2">
+                <button type="button" onclick="runFreshCheck()" class="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300 dark:border-gray-600">Check again</button>
+                <button type="button" onclick="closeFreshModal()" class="custom-primary text-white px-4 py-2 rounded-lg text-sm font-semibold ml-auto">Done</button>
+            </div>
+        </div>
+    </div>
+
     <div id="labelsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border dark:border-gray-700 max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-1">
@@ -2747,6 +2779,7 @@
                     ['fa-tags', 'Print labels', 'openLabelsModal()']
                 ]],
                 ['Data and files', [
+                    ['fa-circle-check', 'Am I up to date? (app, data, settings)', 'openFreshCheck()'],
                     ['fa-cloud', 'Household sync', 'openSyncModal()'],
                     ['fa-folder-open', 'Inventory file', 'openFileModal()'],
                     ['fa-cloud-arrow-down', 'Back up now (JSON)', 'exportJSON()'],
@@ -3356,7 +3389,7 @@
         }
         // v2.94 Version log: add an entry here with every update (newest first)
         const VERSION_LOG = [
-            ['3.12', ['<b>Guided help</b> (Settings): small pop-up tips walk you through adding an item, printing labels and using reports, one step at a time. Each set of tips shows the first couple of times, then stops. It starts on for new users; turn it on or off any time, or tap <b>Show all the tips again</b>.', '<b>Backups hold only your inventory</b> (items with photos and receipts, plus rooms, categories, types, tags and checklists). Your <b>settings</b> now have their own small file: <b>Settings › Save my settings</b> and <b>Load my settings</b>, so each person keeps their own look. Older backups that include settings still open; only their items and lists are used.', 'A small <b>version number</b> now sits to the right of the <b>Home Inventory</b> name everywhere it shows: the opening screen, the manual, sharing, and on every report and printout.']],
+            ['3.12', ['<b>Am I up to date?</b> When the app opens it asks whether to check that this device has the latest <b>app</b>, the latest <b>inventory data</b> (Household Sync or your shared file) and your latest <b>settings</b>, with a button to fix each one. Also in the menu under Data and files, and a switch in Settings.', '<b>Guided help</b> (Settings): small pop-up tips walk you through adding an item, printing labels and using reports, one step at a time. Each set of tips shows the first couple of times, then stops. It starts on for new users; turn it on or off any time, or tap <b>Show all the tips again</b>.', '<b>Backups hold only your inventory</b> (items with photos and receipts, plus rooms, categories, types, tags and checklists). Your <b>settings</b> now have their own small file: <b>Settings › Save my settings</b> and <b>Load my settings</b>, so each person keeps their own look. Older backups that include settings still open; only their items and lists are used.', 'A small <b>version number</b> now sits to the right of the <b>Home Inventory</b> name everywhere it shows: the opening screen, the manual, sharing, and on every report and printout.']],
             ['3.11', ['Backups now hold <b>everything</b> in one file: your items (with photos and receipts), your lists (rooms, categories, types, tags, checklists) and your <b>settings</b> (colors, light/dark, backgrounds, list order, report, label and packing choices, reminders). Restoring a backup brings all of it back.']],
             ['3.10', ['New <b>Type</b> choices for jewelry and collectibles: Jewelry, Watch, Gemstone, Coin, Stamp, Trading card, Art, Antique and Collectible. Existing inventories get them once, and they can still be renamed or removed under Manage Lists.']],
             ['3.09', ['<b>Take inventory</b> (Items menu): tap <b>Seen now</b> on each item you have checked. The date, time and current room and spot are saved automatically. Filter by valuables, room or category, and <b>Mark all shown as seen</b> for a whole group.', '<b>Inventory report</b> (Reports menu, or from Take inventory): a printable list of items grouped by room, with the date the inventory was taken, last seen date and place, and totals. Items moved since they were last seen are flagged.', 'Each item shows its <b>Last seen</b> date, and the eye button in its details marks it seen now.']],
@@ -3442,6 +3475,71 @@
         function installUpdate() {
             try { if (typeof flushPendingSaves === 'function') flushPendingSaves(); } catch (e) {}
             location.replace(APP_HOME_URL + '?updated=' + Date.now());
+        }
+        // v3.12 Am I up to date? Checks the app version, the inventory data and the settings on this device
+        const FRESH_ASK_KEY = 'HOME_INVENTORY_FRESH_ASK';
+        function freshAskOn() { try { return localStorage.getItem(FRESH_ASK_KEY) !== '0'; } catch (e) { return true; } }
+        function setFreshAskOn(on) { try { localStorage.setItem(FRESH_ASK_KEY, on ? '1' : '0'); } catch (e) {} const t = document.getElementById('toggleFreshAsk'); if (t) t.checked = on; if (!on) showToast('The app will not ask. Use Data › Am I up to date? any time.'); }
+        function maybeAskFresh() {
+            if (!freshAskOn()) return;
+            try { if (sessionStorage.getItem('HI_FRESH_ASKED')) return; } catch (e) {}
+            const sp = document.getElementById('splash'), ls = document.getElementById('launchScreen');
+            if ((sp && !sp.classList.contains('hidden')) || (ls && ls.offsetParent)) return;   // asked once the opening screens close
+            try { sessionStorage.setItem('HI_FRESH_ASKED', '1'); } catch (e) {}
+            document.getElementById('freshAsk').classList.remove('hidden');
+        }
+        function freshAskVisible() { const a = document.getElementById('freshAsk'); return a && !a.classList.contains('hidden'); }
+        function freshAskAnswer(yes) {
+            document.getElementById('freshAsk').classList.add('hidden');
+            if (yes) openFreshCheck(); else setTimeout(() => { try { maybeGuide('home'); } catch (e) {} }, 300);
+        }
+        function openFreshCheck() { closeDropdowns(); document.getElementById('freshAsk').classList.add('hidden'); try { sessionStorage.setItem('HI_FRESH_ASKED', '1'); } catch (e) {} document.getElementById('freshModal').classList.remove('hidden'); runFreshCheck(); }
+        function closeFreshModal() { document.getElementById('freshModal').classList.add('hidden'); }
+        const freshRow = (icon, color, title, body, buttons) => `<div class="flex gap-3"><i class="fa-solid ${icon} text-lg mt-0.5" style="color:${color}"></i><div class="min-w-0 flex-1"><p class="font-semibold">${title}</p><div class="text-gray-600 dark:text-gray-300 mt-0.5">${body}</div>${buttons ? `<div class="flex flex-wrap gap-2 mt-2">${buttons}</div>` : ''}</div></div>`;
+        const freshBtn = (label, js, primary) => `<button type="button" onclick="${js}" class="${primary ? 'custom-primary text-white' : 'border border-gray-300 dark:border-gray-600'} px-3 py-1.5 rounded-lg text-sm font-semibold">${label}</button>`;
+        const OK = '#10b981', WARN = '#f59e0b', INFO = '#6b7280';
+        async function runFreshCheck() {
+            const body = document.getElementById('freshBody');
+            body.innerHTML = '<p class="text-gray-500"><i class="fa-solid fa-circle-info mr-1.5"></i>Checking…</p>';
+            const [appRow, dataRow] = await Promise.all([freshAppRow(), freshDataRow()]);
+            body.innerHTML = appRow + dataRow + freshSettingsRow();
+        }
+        async function freshAppRow() {
+            if (inClaudeViewer()) return freshRow('fa-circle-check', OK, `App: v${esc(APP_VERSION)}, the latest`, 'You opened the app from its Claude link, which always runs the newest version.');
+            let latest = '';
+            try { const r = await fetch(APP_HOME_URL + 'index.html?check=' + Date.now(), { cache: 'no-store' }); latest = ((await r.text()).match(/<title>\s*Home Inventory v([0-9.]+)/) || [])[1] || ''; } catch (e) {}
+            try { localStorage.setItem(UPDATE_KEY, JSON.stringify({ at: Date.now(), latest })); } catch (e) {}
+            if (!latest) return freshRow('fa-triangle-exclamation', WARN, `App: v${esc(APP_VERSION)}`, 'The update site could not be reached, so the newest version is unknown. Check that you are online and try again.');
+            if (versionNewer(latest, APP_VERSION)) return freshRow('fa-triangle-exclamation', WARN, `App: v${esc(APP_VERSION)}. Version ${esc(latest)} is available`, onAppHomeSite() ? 'Updating takes a second, and your items stay where they are.' : 'This copy is a saved file. Open the app from its web address to get the newest version.', onAppHomeSite() ? freshBtn('Update now', 'installUpdate()', true) : `<a href="${APP_HOME_URL}" target="_blank" rel="noopener" class="custom-primary text-white px-3 py-1.5 rounded-lg text-sm font-semibold">Open the newest app</a>`);
+            return freshRow('fa-circle-check', OK, `App: v${esc(APP_VERSION)}, the latest`, 'This matches the newest version online.');
+        }
+        async function freshDataRow() {
+            const n = items.length, here = `This device has <b>${n}</b> item${n === 1 ? '' : 's'} in <b>${esc(currentInvName())}</b>.`;
+            let last = 0; try { last = Number(localStorage.getItem(BACKUP_KEY)) || 0; } catch (e) {}
+            const backup = last ? ` Last backup: ${esc(fmtDateTime(new Date(last).toISOString()))}.` : ' No backup yet on this device.';
+            if (typeof cloud !== 'undefined' && cloud.on) {
+                if (cloud.status === 'on' && cloud.loaded) return freshRow('fa-circle-check', OK, 'Data: up to date (Household Sync)', here + ` Household Sync is on, so changes from other devices arrive by themselves${cloud.lastSync ? '; last synced ' + esc(fmtDateTime(new Date(cloud.lastSync).toISOString())) : ''}.`, freshBtn('Sync now', 'syncNow(); setTimeout(runFreshCheck, 2500)'));
+                return freshRow('fa-triangle-exclamation', WARN, 'Data: Household Sync is not connected right now', here + ' ' + esc(cloud.error || 'It is still connecting.') + ' Changes made on other devices may not be here yet.', freshBtn('Open Household Sync', 'closeFreshModal(); openSyncModal()', true));
+            }
+            if (fileMeta && fileMeta.mode === 'linked' && fileHandle) {
+                if (!filePermission) return freshRow('fa-triangle-exclamation', WARN, `Data: reconnect ${esc(fileMeta.name)}`, here + ' This device is linked to that file but needs your OK to read it, so a newer copy from another device might not be loaded.', freshBtn('Reconnect and check', 'reconnectInventoryFile().then(runFreshCheck)', true));
+                try {
+                    const data = parseInventoryFileText(await (await fileHandle.getFile()).text());
+                    if (data.savedAt && (!fileMeta.savedAt || data.savedAt > fileMeta.savedAt)) return freshRow('fa-triangle-exclamation', WARN, `Data: a newer copy of ${esc(fileMeta.name)} is in your file`, here + ` The file was saved ${esc(fmtDateTime(data.savedAt))} with ${data.items.length} items, probably on another device.`, freshBtn('Load the newer copy', 'checkLinkedFileForNewerVersion().then(runFreshCheck)', true));
+                    return freshRow('fa-circle-check', OK, `Data: matches ${esc(fileMeta.name)}`, here + ` Your linked file was last saved ${esc(fmtDateTime(data.savedAt || fileMeta.savedAt))}.` + (fileMeta.dirty ? ' Changes made here are being saved to it.' : ''));
+                } catch (e) { return freshRow('fa-triangle-exclamation', WARN, `Data: ${esc(fileMeta.name)} could not be read`, here + ' It may have been moved or renamed.', freshBtn('Open Inventory File', 'closeFreshModal(); openFileModal()', true)); }
+            }
+            if (fileMeta && fileMeta.name) return freshRow('fa-circle-info', INFO, 'Data: check your inventory file', here + ` It was last opened from or saved to <b>${esc(fileMeta.name)}</b> on ${esc(fmtDateTime(fileMeta.savedAt))}. This device can't look inside that file by itself, so if you saved a newer copy on another device, open it here.` + backup, freshBtn('Open my inventory file', 'closeFreshModal(); openInventoryFile()', true) + freshBtn('Household Sync (automatic)', 'closeFreshModal(); openSyncModal()'));
+            return freshRow('fa-circle-info', INFO, 'Data: only on this device', here + ' It is not linked to a shared file or Household Sync, so changes made on other devices do not come here.' + backup, freshBtn('Open a newer file', 'closeFreshModal(); openInventoryFile()') + freshBtn('Household Sync (automatic)', 'closeFreshModal(); openSyncModal()', true));
+        }
+        function freshSettingsRow() {
+            let saved = null, loaded = null;
+            try { saved = JSON.parse(localStorage.getItem('HOME_INVENTORY_SETTINGS_FILE_AT')); loaded = JSON.parse(localStorage.getItem('HOME_INVENTORY_SETTINGS_LOADED_AT')); } catch (e) {}
+            const parts = [];
+            if (loaded && loaded.at) parts.push(`Last loaded from <b>${esc(loaded.name)}</b> on ${esc(fmtDateTime(loaded.at))}.`);
+            if (saved && saved.saved) parts.push(`Last saved to a file on ${esc(fmtDateTime(saved.saved))}.`);
+            const text = (parts.join(' ') || 'Your settings have not been saved to or loaded from a settings file on this device.') + ' Settings stay on each device. If you changed them on another device, save them there and load that file here.';
+            return freshRow('fa-sliders', INFO, 'Settings: kept on this device', text, `<label class="border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-lg text-sm font-semibold cursor-pointer">Load my settings<input type="file" accept=".json,application/json" class="hidden" onchange="loadMySettings(event)"></label>` + freshBtn('Save my settings', 'saveMySettings(); setTimeout(runFreshCheck, 1500)'));
         }
         function autoCheckForUpdates() {
             let last = {}; try { last = JSON.parse(localStorage.getItem(UPDATE_KEY)) || {}; } catch (e) {}
@@ -3610,7 +3708,7 @@
         function saveMySettings() {
             const data = { app: 'Home Inventory', kind: 'settings', version: APP_VERSION, savedAt: new Date().toISOString(), settings: collectSettings() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            saveFileAs(blob, exportFileName('My_Settings', '.json')).then(res => { if (res && res.ok) showToast('Saved your settings as ' + res.name + '. Your items are not in it; use Back up now for those.'); }).catch(() => showToast('Your settings could not be saved here.'));
+            saveFileAs(blob, exportFileName('My_Settings', '.json')).then(res => { if (res && res.ok) { try { localStorage.setItem('HOME_INVENTORY_SETTINGS_FILE_AT', JSON.stringify({ saved: new Date().toISOString(), name: res.name })); } catch (e) {} } if (res && res.ok) showToast('Saved your settings as ' + res.name + '. Your items are not in it; use Back up now for those.'); }).catch(() => showToast('Your settings could not be saved here.'));
         }
         function loadMySettings(event) {
             const file = event.target.files[0];
@@ -3622,6 +3720,7 @@
                 if (!parsed || !parsed.settings || typeof parsed.settings !== 'object') { showToast('That file has no Home Inventory settings in it. Choose a My_Settings file.'); return; }
                 const n = applySettings(parsed.settings);
                 if (!n) { showToast('No settings were found in that file.'); return; }
+                try { localStorage.setItem('HOME_INVENTORY_SETTINGS_LOADED_AT', JSON.stringify({ at: new Date().toISOString(), name: file.name, savedAt: parsed.savedAt || '' })); } catch (e) {}
                 reloadAfterSettings('Your settings were loaded (' + n + ').' + (parsed.kind === 'settings' ? '' : ' Only the settings were taken from that backup; your items were not changed.'));
             }).catch(() => showToast('That file could not be read.'));
         }
@@ -9814,7 +9913,7 @@
             document.getElementById('splashKeep').checked = splashOn();
             document.getElementById('splash').classList.remove('hidden');
         }
-        function closeSplash() { document.getElementById('splash').classList.add('hidden'); setTimeout(() => maybeGuide('home'), 500); }
+        function closeSplash() { document.getElementById('splash').classList.add('hidden'); setTimeout(() => { maybeAskFresh(); maybeGuide('home'); }, 500); }
 
         // v3.12 Guided help: little pop-ups that walk through a task one step at a time.
         // Each guide shows until it has been finished twice (or "Don't show this again"); Settings turns it on or off.
@@ -9870,7 +9969,7 @@
             const seen = guidesSeen()[name] || {};
             if (seen.off || (seen.done || 0) >= 2) return;
             const sp = document.getElementById('splash'); if (name === 'home' && sp && !sp.classList.contains('hidden')) return;
-            if (name === 'home' && document.querySelector('#itemModal:not(.hidden), #labelsModal:not(.hidden)')) return;
+            if (name === 'home' && (freshAskVisible() || document.querySelector('#itemModal:not(.hidden), #labelsModal:not(.hidden), #freshModal:not(.hidden)'))) return;
             guide = { name, i: -1 };
             guideNext();
         }
@@ -9932,7 +10031,8 @@
             ['closeModal', 'closeLabelsModal', 'closeInsuranceReport', 'closeLabelSheet'].forEach(f => { const o = window[f]; if (typeof o === 'function') window[f] = function () { endGuide(); return o.apply(this, arguments); }; });
             syncGuidedToggle();
             const sp = document.getElementById('splash');
-            if (!sp || sp.classList.contains('hidden')) setTimeout(() => maybeGuide('home'), 1500);
+            { const t = document.getElementById('toggleFreshAsk'); if (t) t.checked = freshAskOn(); }
+            setTimeout(() => { maybeAskFresh(); maybeGuide('home'); }, 2600);
         }, 0);
         function splashGo(k) {
             closeSplash();
