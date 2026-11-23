@@ -10112,7 +10112,7 @@
             const res = await saveFileAs(blob, backupFileName());
             if (!res.ok) return;
             markExportDone();
-            showToast('Backup saved as ' + res.name + '. Keep it somewhere safe, like ' + (storageId() && storageId() !== 'device' ? storageName() : 'iCloud Drive, OneDrive or Google Drive') + '.');
+            showToast('Data backed up (items, photos and receipts) as ' + res.name + '. Keep it somewhere safe, like ' + (storageId() && storageId() !== 'device' ? storageName() : 'iCloud Drive, OneDrive or Google Drive') + '.');
         }
 
         // v3.64 Back up everything: data, settings and the app itself, as three files with the same date and time
@@ -11955,7 +11955,7 @@
                 <p class="mt-2">&copy; 2026 Tom Daube. All rights reserved.</p>
             </div>
             <div class="flex items-center gap-3 flex-wrap justify-center">
-                <button onclick="exportJSON()" class="hover:text-gray-900 dark:hover:text-white font-medium transition flex items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700" title="Save a full backup file, including photos and receipts">
+                <button onclick="exportJSON()" class="hover:text-gray-900 dark:hover:text-white font-medium transition flex items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700" title="Backs up your data only: items, photos and receipts (not your settings or the app)">
                     <i class="fa-solid fa-cloud-arrow-down mr-1.5 text-emerald-500"></i> Back up data now
                 </button>
                 <button onclick="backupAll()" class="hover:text-gray-900 dark:hover:text-white font-medium transition flex items-center bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700" title="Saves 3 files with the same date and time: your data, your settings and the app">
